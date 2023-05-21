@@ -35,15 +35,16 @@ module chip_select
     output       fcu_flip_cs,
     output       reset_z80_cs,
 
-    // Z80 selects
-    output       z80_p1_cs,
-    output       z80_p2_cs,
-    output       z80_dswa_cs,
-    output       z80_dswb_cs,
-    output       z80_system_cs,
-    output       z80_tjump_cs,
-    output       z80_sound0_cs,
-    output       z80_sound1_cs,
+    // Z180 selects
+    output       credits_cs,
+    output       p1_cs,
+    output       p2_cs,
+    output       dswa_cs,
+    output       dswb_cs,
+    output       system_cs,
+    output       tjump_cs,
+    output       sound0_cs,
+    output       sound1_cs,
 
     // other params
     output reg [15:0] scroll_y_offset
@@ -69,23 +70,21 @@ endfunction
 
 always @(*) begin
 
-    if (pcb == pcb_zero_wing || pcb == pcb_hellfire) begin
-        scroll_y_offset = 16;
-    end else begin
+//    if (pcb == pcb_zero_wing || pcb == pcb_hellfire) begin
+//        scroll_y_offset = 16;
+//    end else begin
         scroll_y_offset = 0;
-    end
+//    end
 
 
     // Setup lines depending on pcb
     case (pcb)
         pcb_vimana: begin
-            prog_rom_cs       = m68k_cs( 'h000000, 19 );
+            prog_rom_cs       = m68k_cs( 'h000000, 18 );
 
-            ram_cs            = m68k_cs( 'h080000, 15 );
-
-            scroll_ofs_x_cs   = m68k_cs( 'h0c0000,  1 );
-            scroll_ofs_y_cs   = m68k_cs( 'h0c0002,  1 );
-            fcu_flip_cs       = m68k_cs( 'h800006,  1 );
+            scroll_ofs_x_cs   = m68k_cs( 'h080000,  1 );
+            scroll_ofs_y_cs   = m68k_cs( 'h080002,  1 );
+            fcu_flip_cs       = m68k_cs( 'h080006,  1 );
 
             vblank_cs         = m68k_cs( 'h400000,  1 );
             int_en_cs         = m68k_cs( 'h400002,  1 );
@@ -94,7 +93,7 @@ always @(*) begin
             tile_palette_cs   = m68k_cs( 'h404000, 11 );
             sprite_palette_cs = m68k_cs( 'h406000, 11 );
 
-            shared_ram_cs     = m68k_cs( 'h440000, 18 );
+            shared_ram_cs     = m68k_cs( 'h440000, 11 );
 
             bcu_flip_cs       = m68k_cs( 'h4c0000,  1 );
             tile_ofs_cs       = m68k_cs( 'h4c0002,  1 );
@@ -109,14 +108,18 @@ always @(*) begin
 
             reset_z80_cs      = 0;
 
-            z80_p1_cs         = z80_cs( 8'h00 );
-            z80_p2_cs         = z80_cs( 8'h08 );
-            z80_dswa_cs       = z80_cs( 8'h20 );
-            z80_dswb_cs       = z80_cs( 8'h28 );
-            z80_system_cs     = z80_cs( 8'h80 );
-            z80_tjump_cs      = z80_cs( 8'h88 );
-            z80_sound0_cs     = z80_cs( 8'ha8 );
-            z80_sound1_cs     = z80_cs( 8'ha9 );
+            ram_cs            = m68k_cs( 'h480000, 14 );
+
+            credits_cs    = m68k_cs( 'h440004,  1 );
+            dswa_cs       = m68k_cs( 'h440006,  1 );
+            system_cs     = m68k_cs( 'h440008,  1 );
+            p1_cs         = m68k_cs( 'h44000a,  1 );
+            p2_cs         = m68k_cs( 'h44000c,  1 );
+            dswb_cs       = m68k_cs( 'h44000e,  1 );
+            tjump_cs      = m68k_cs( 'h440010,  1 );
+
+            sound0_cs     = z80_cs( 8'h87 );
+            sound1_cs     = z80_cs( 8'h8f );
         end
 
 /*

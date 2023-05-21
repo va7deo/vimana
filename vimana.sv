@@ -336,15 +336,12 @@ wire [26:0] ioctl_addr;
 wire [15:0] ioctl_dout;
 wire [15:0] ioctl_din;
 
-reg   [7:0] pcb;
+reg   [1:0] pcb;
 wire        tile_priority_type;
 wire [15:0] scroll_y_offset;
 
-localparam pcb_zero_wing     = 0;
-localparam pcb_out_zone_conv = 1;
-localparam pcb_out_zone      = 2;
-localparam pcb_hellfire      = 3;
-localparam pcb_truxton       = 4;
+localparam pcb_vimana   = 0;
+localparam pcb_samesame = 1;
 
 wire [21:0] gamma_bus;
 
@@ -764,7 +761,6 @@ always @ (posedge clk_sys) begin
             ram_cs ? ram_dout :
             tile_palette_cs ?  tile_palette_cpu_dout :
             sprite_palette_cs ?  sprite_palette_cpu_dout :
-            shared_ram_cs ? cpu_shared_dout :
             tile_ofs_cs ? curr_tile_ofs :
             sprite_ofs_cs ? curr_sprite_ofs :
             tile_attr_cs ? cpu_tile_dout_attr :
@@ -775,6 +771,14 @@ always @ (posedge clk_sys) begin
             sprite_3_cs ? sprite_3_dout :
             sprite_size_cs ? sprite_size_cpu_dout :
             frame_done_cs ? { 16 { vbl } } : // get vblank state
+            p1_cs ? p1 :
+            p2_cs ? p2 :
+            dswa_cs ? z80_dswa :
+            dswb_cs ? z80_dswb :
+            tjump_cs ? z80_dswb :
+            system_cs ? system :
+            credits_cs ? 16'h02 :
+            shared_ram_cs ? cpu_shared_dout :
             vblank_cs ? { 15'b0, vbl } :
             int_en_cs ? 16'hffff :
             16'd0;
@@ -815,19 +819,7 @@ always @ (posedge clk_sys) begin
                 end
             end else if ( sound_ram_1_cs ) begin
                 z80_din <= z80_shared_dout;
-            end else if ( z80_p1_cs ) begin
-                z80_din <= p1;
-            end else if ( z80_p2_cs ) begin
-                z80_din <= p2;
-            end else if ( z80_dswa_cs ) begin
-                z80_din <= z80_dswa;
-            end else if ( z80_dswb_cs ) begin
-                z80_din <= z80_dswb;
-            end else if ( z80_tjump_cs ) begin
-                z80_din <= z80_tjump;
-            end else if ( z80_system_cs ) begin
-                z80_din <= system;
-            end else if ( z80_sound0_cs ) begin
+            end else if ( sound0_cs ) begin
                 z80_din <= opl_dout;
             end else begin
                 z80_din <= 8'h00;
@@ -835,9 +827,9 @@ always @ (posedge clk_sys) begin
         end
         sound_wr <= 0;
         if ( z80_wr_n == 0 ) begin
-            if ( z80_sound0_cs | z80_sound1_cs ) begin
+            if ( sound0_cs | sound1_cs ) begin
                 sound_data  <= z80_dout;
-                sound_addr <= { 1'b0, z80_sound1_cs }; // pad for opl3.  opl2 is single bit address
+                sound_addr <= { 1'b0, sound1_cs }; 
                 sound_wr <= 1;
             end
         end
@@ -1019,14 +1011,15 @@ wire sprite_cs; // *** offset needs to be auto-incremented
 wire sprite_size_cs; // *** offset needs to be auto-incremented
 wire sprite_ram_cs;
 
-wire z80_p1_cs;
-wire z80_p2_cs;
-wire z80_dswa_cs;
-wire z80_dswb_cs;
-wire z80_system_cs;
-wire z80_tjump_cs;
-wire z80_sound0_cs;
-wire z80_sound1_cs;
+wire credits_cs;
+wire p1_cs;
+wire p2_cs;
+wire dswa_cs;
+wire dswb_cs;
+wire system_cs;
+wire tjump_cs;
+wire sound0_cs;
+wire sound1_cs;
 
 chip_select cs (.*);
 
@@ -1035,10 +1028,10 @@ wire sprite_1_cs      = ( curr_sprite_ofs[1:0] == 2'b01 ) & sprite_cs;
 wire sprite_2_cs      = ( curr_sprite_ofs[1:0] == 2'b10 ) & sprite_cs;
 wire sprite_3_cs      = ( curr_sprite_ofs[1:0] == 2'b11 ) & sprite_cs;
 
-reg reset_z80_n;
+reg  reset_z80_n;
 wire reset_z80_cs;
 wire sound_rom_1_cs   = ( MREQ_n == 0 && z80_addr <= 16'h7fff );
-wire sound_ram_1_cs   = ( MREQ_n == 0 && z80_addr >= 16'h8000 && z80_addr <= 16'h87ff );
+wire sound_ram_1_cs   = ( MREQ_n == 0 && z80_addr >= 16'h8000 && z80_addr <= 16'hffff );
 
 reg int_en;
 reg int_ack;
@@ -1078,10 +1071,10 @@ always @ (posedge clk_sys) begin
         int_en <= 0;
         reset_z80_n <= 0;
     end else begin
-        if ( pcb != 3 && pcb != 4 ) begin
+//        if ( pcb != 3 && pcb != 4 ) begin
             // if the pcb uses the 68k reset pin to drive the reset line
             reset_z80_n <= cpu_reset_n_o;
-        end
+//        end
         // write asserted and rising cpu clock
         if (  clk_10M == 1 && cpu_rw == 0 ) begin
             if ( tile_ofs_cs ) begin
@@ -1841,7 +1834,8 @@ dual_port_ram #(.LEN(16384), .DATA_WIDTH(8))     ram16kx8_H (
 
 // z80 and 68k shared ram
 // 4k
-dual_port_ram #(.LEN(4096), .DATA_WIDTH(8))  shared_ram (
+dual_port_ram #(.LEN(32768), .DATA_WIDTH(8)) shared_ram 
+(
     .clock_a ( clk_10M ),
     .address_a ( cpu_a[12:1] ),
     .wren_a ( shared_ram_cs & !cpu_rw & !cpu_lds_n),
@@ -1849,13 +1843,13 @@ dual_port_ram #(.LEN(4096), .DATA_WIDTH(8))  shared_ram (
     .q_a ( cpu_shared_dout[7:0] ),
 
     .clock_b ( clk_3_5M ),  // z80 clock is 3.5M
-    .address_b ( z80_addr[11:0] ),
+    .address_b ( z80_addr[14:0] ),
     .data_b ( z80_dout ),
     .wren_b ( sound_ram_1_cs & ~z80_wr_n ),
     .q_b ( z80_shared_dout )
 );
 
-reg [11:0] sprite_rb_addr;
+reg  [11:0] sprite_rb_addr;
 wire [15:0] sprite_rb_dout;
 
 dual_port_ram #(.LEN(4096), .DATA_WIDTH(8)) sprite_ram_rb_l (
@@ -1863,7 +1857,7 @@ dual_port_ram #(.LEN(4096), .DATA_WIDTH(8)) sprite_ram_rb_l (
     .address_a ( cpu_a[12:1] ),
     .wren_a ( sprite_ram_cs & !cpu_rw & !cpu_lds_n),
     .data_a ( cpu_dout[7:0] ),
-    .q_a ( sprite_rb_dout[7:0] ),
+    .q_a ( ),
 
     .clock_b ( clk_sys ),
     .address_b ( sprite_rb_addr ),
@@ -1876,7 +1870,7 @@ dual_port_ram #(.LEN(4096), .DATA_WIDTH(8)) sprite_ram_rb_h (
     .address_a ( cpu_a[12:1] ),
     .wren_a ( sprite_ram_cs & !cpu_rw & !cpu_uds_n),
     .data_a ( cpu_dout[15:8] ),
-    .q_a ( cpu_shared_dout[15:8] ),
+    .q_a ( ),
 
     .clock_b ( clk_sys ),
     .address_b ( sprite_rb_addr ),
@@ -1942,7 +1936,7 @@ wire        tile_cache_valid;
 reg  [31:0] tile_data;
 
 wire        sprite_rom_cs;
-wire [17:0] sprite_rom_addr;
+wire [18:0] sprite_rom_addr;
 wire [31:0] sprite_rom_data;
 wire        sprite_rom_data_valid;
 
