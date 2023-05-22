@@ -70,12 +70,7 @@ endfunction
 
 always @(*) begin
 
-//    if (pcb == pcb_zero_wing || pcb == pcb_hellfire) begin
-//        scroll_y_offset = 16;
-//    end else begin
-        scroll_y_offset = 0;
-//    end
-
+    scroll_y_offset = 0;
 
     // Setup lines depending on pcb
     case (pcb)
@@ -110,84 +105,16 @@ always @(*) begin
 
             ram_cs            = m68k_cs( 'h480000, 14 );
 
-            credits_cs    = m68k_cs( 'h440004,  1 );
-            dswa_cs       = m68k_cs( 'h440006,  1 );
-            system_cs     = m68k_cs( 'h440008,  1 );
-            p1_cs         = m68k_cs( 'h44000a,  1 );
-            p2_cs         = m68k_cs( 'h44000c,  1 );
-            dswb_cs       = m68k_cs( 'h44000e,  1 );
-            tjump_cs      = m68k_cs( 'h440010,  1 );
-
+            dswb_cs       = z80_cs( 8'h60 ); // port a inverted
+            tjump_cs      = z80_cs( 8'h66 ); // port g ( x ^ 0xFF) | 0xC0
+            p1_cs         = z80_cs( 8'h80 );
+            p2_cs         = z80_cs( 8'h81 );
+            dswa_cs       = z80_cs( 8'h82 );
+            system_cs     = z80_cs( 8'h83 );
+            
             sound0_cs     = z80_cs( 8'h87 );
             sound1_cs     = z80_cs( 8'h8f );
         end
-
-/*
-	map(0x480000, 0x487fff).ram();
-	map(0x440004, 0x440005).lr16(NAME([]() -> u16 {  return 1; })); 	number of credits
-
-	map(0x440006, 0x440007).portr("DSWA");
-	map(0x440008, 0x440009).portr("SYSTEM"); 	needs special handling
-	map(0x44000a, 0x44000b).portr("P1");
-	map(0x44000c, 0x44000d).portr("P2");
-	map(0x44000e, 0x44000f).portr("DSWB");
-	map(0x440010, 0x440011).portr("TJUMP");
-
-void toaplan1_state::vimana_hd647180_io_map(address_map &map)
-{
-	map.global_mask(0xff);
-	map(0x32, 0x32).nopw(); // DMA WAIT/Control register
-	map(0x33, 0x33).nopw(); // IL (int vector low) register
-	map(0x36, 0x36).nopw(); // refresh control register for RFSH pin
-	// 53: disable reg for port A
-	map(0x60, 0x60).nopr(); // read/write port A
-	// 61: read/write port B
-	// 62: read/write port C
-	// 63: read/write port D
-	// 64: read/write port E
-	// 65: read/write port F
-	map(0x66, 0x66).nopr(); // read port G
-	// 70: ddr for port A
-	map(0x71, 0x71).nopw(); // ddr for port B
-	map(0x72, 0x72).nopw(); // ddr for port C
-	map(0x73, 0x73).nopw(); // ddr for port D
-	map(0x74, 0x74).nopw(); // ddr for port E
-	map(0x75, 0x75).nopw(); // ddr for port F
-	map(0x80, 0x80).portr("P1");
-	map(0x81, 0x81).portr("P2");
-	map(0x82, 0x82).portr("DSWA");
-	map(0x83, 0x83).portr("SYSTEM");
-	map(0x84, 0x84).w(FUNC(toaplan1_state::coin_w));  // Coin counter/lockout // needs verify
-	map(0x87, 0x87).rw("ymsnd", FUNC(ym3812_device::status_r), FUNC(ym3812_device::address_w));
-	map(0x8f, 0x8f).w("ymsnd", FUNC(ym3812_device::data_w));
-}
-
-u8 toaplan1_state::vimana_dswb_invert_r()
-{
-	return m_dswb_io->read() ^ 0xff;
-}
-
-u8 toaplan1_state::vimana_tjump_invert_r()
-{
-	return (m_tjump_io->read() ^ 0xff) | 0xc0; // high 2 bits of port G always read as 1
-}
-
-u8 toaplan1_samesame_state::cmdavailable_r()
-{
-	return m_soundlatch->pending_r() ? 1 : 0;
-}
-
-void toaplan1_samesame_state::hd647180_io_map(address_map &map)
-{
-	map.unmap_value_high();
-	map.global_mask(0xff);
-
-	map(0x63, 0x63).nopr(); // read port D
-	map(0xa0, 0xa0).r(m_soundlatch, FUNC(generic_latch_8_device::read));
-	map(0xb0, 0xb0).w(m_soundlatch, FUNC(generic_latch_8_device::acknowledge_w));
-
-	map(0x80, 0x81).rw("ymsnd", FUNC(ym3812_device::read), FUNC(ym3812_device::write));
-}*/
 
         default:;
     endcase

@@ -347,12 +347,12 @@ wire [21:0] gamma_bus;
 
 //<buttons names="Fire,Jump,Start,Coin,Pause" default="A,B,R,L,Start" />
 // Inputs tied to z80_din
-reg [15:0] p1;
-reg [15:0] p2;
-reg [15:0] z80_dswa;
-reg [15:0] z80_dswb;
-reg [15:0] z80_tjump;
-reg [15:0] system;
+reg [7:0] p1;
+reg [7:0] p2;
+reg [7:0] z80_dswa;
+reg [7:0] z80_dswb;
+reg [7:0] z80_tjump;
+reg [7:0] system;
 
 always @ (posedge clk_sys ) begin
     p1        <= { 1'b0, p1_buttons[2:0], p1_right, p1_left, p1_down, p1_up };
@@ -383,6 +383,7 @@ reg coin_a;
 reg coin_b;
 reg b_pause;
 reg service;
+reg [7:0]   credits;
 
 always @ * begin
     p1_swap <= status[38];
@@ -750,6 +751,8 @@ fx68k fx68k (
     .eab(cpu_a[23:1])
 );
 
+
+
 always @ (posedge clk_sys) begin
     if ( clk_10M == 1 ) begin
         // tell 68k to wait for valid data. 0=ready 1=wait
@@ -771,13 +774,6 @@ always @ (posedge clk_sys) begin
             sprite_3_cs ? sprite_3_dout :
             sprite_size_cs ? sprite_size_cpu_dout :
             frame_done_cs ? { 16 { vbl } } : // get vblank state
-            p1_cs ? p1 :
-            p2_cs ? p2 :
-            dswa_cs ? z80_dswa :
-            dswb_cs ? z80_dswb :
-            tjump_cs ? z80_dswb :
-            system_cs ? system :
-            credits_cs ? 16'h02 :
             shared_ram_cs ? cpu_shared_dout :
             vblank_cs ? { 15'b0, vbl } :
             int_en_cs ? 16'hffff :
@@ -804,12 +800,14 @@ always @ (posedge clk_sys) begin
     if ( reset == 1 ) begin
         z80_wait_n <= 0;
         sound_wr <= 0;
+        credits <= 0;
     end else if ( clk_3_5M == 1 ) begin
         z80_wait_n <= 1;
         if ( ioctl_download | ( z80_rd_n == 0 && sound_rom_1_data_valid == 0 && sound_rom_1_cs == 1 ) ) begin
             // wait if rom is selected and data is not yet available
             z80_wait_n <= 0;
         end
+        
         if ( z80_rd_n == 0 ) begin
             if ( sound_rom_1_cs ) begin
                 if ( sound_rom_1_data_valid ) begin
@@ -821,6 +819,19 @@ always @ (posedge clk_sys) begin
                 z80_din <= z80_shared_dout;
             end else if ( sound0_cs ) begin
                 z80_din <= opl_dout;
+            end else if ( p1_cs ) begin
+                z80_din <= p1 ;
+            end else if ( p2_cs ) begin
+                z80_din <= p2 ;
+            end else if ( dswa_cs ) begin
+                z80_din <= z80_dswa ;
+            end else if ( dswb_cs ) begin
+                z80_din <= ~z80_dswb ;
+            end else if ( tjump_cs ) begin
+                z80_din <= 8'hc0 | ~z80_tjump ;
+            end else if ( system_cs ) begin
+                z80_din <= system ;
+                
             end else begin
                 z80_din <= 8'h00;
             end
