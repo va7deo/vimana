@@ -5,20 +5,20 @@ FPGA compatible core of Toaplan Version 1 arcade hardware for [**MiSTerFPGA**](h
 
 The intent is for this core to be a 1:1 implementation of Toaplan V1 hardware. Currently in beta state, this core is in active development with assistance from [**atrac17**](https://github.com/atrac17).
 
+![vimana_github](https://github.com/va7deo/vimana/assets/32810066/9861ae27-75ba-488e-b7f8-69d656e1e110)
 
 ## Supported Titles
 
-| Title                                                               | PCB<br>Number | Status      | Released | ROM Set     |
-|---------------------------------------------------------------------|---------------|-------------|----------|-------------|
-| [**Same! Same! Same!**](https://en.wikipedia.org/wiki/Fire_Shark  ) | TP-017        | Implemented | No       | .254 merged |
-| [**Vimana**](https://en.wikipedia.org/wiki/Vimana_%28video_game%29) | TP-019        | Implemented | No       | .254 merged |
+| Title                                                               | PCB<br>Number | Status      | Released |
+|---------------------------------------------------------------------|---------------|-------------|----------|
+| [**Same! Same! Same!**](https://en.wikipedia.org/wiki/Fire_Shark  ) | TP-017        | Implemented | No       |
+| [**Vimana**](https://en.wikipedia.org/wiki/Vimana_%28video_game%29) | TP-019        | Implemented | No       |
 
 ## External Modules
 
 | Module                                                                                | Function                                                                    | Author                                         |
 |---------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|------------------------------------------------|
 | [**fx68k**](https://github.com/ijor/fx68k)                                            | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)      | Jorge Cwik                                     |
-| [**tms320c1x**](https://github.com/srg320/TMS320C1X)                                  | [**Texas Instruments TMS320 DSP**](https://en.wikipedia.org/wiki/Zilog_Z80) | srg320                                         |
 | [**t80**](https://opencores.org/projects/t80)                                         | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)                | Daniel Wallner                                 |
 | [**jtopl2**](https://github.com/jotego/jtopl)                                         | [**Yamaha OPL2**](https://en.wikipedia.org/wiki/Yamaha_OPL#OPL2)            | Jose Tejada                                    |
 | [**yc_out**](https://github.com/MikeS11/MiSTerFPGA_YC_Encoder)                        | [**Y/C Video Module**](https://en.wikipedia.org/wiki/S-Video)               | Mike Simone                                    |
@@ -50,7 +50,7 @@ The intent is for this core to be a 1:1 implementation of Toaplan V1 hardware. C
 
 **Estimated geometry:**
 
-_(Horror Story)_
+_(Vimana)_
 
     450 pixels/line  
   
@@ -58,11 +58,11 @@ _(Horror Story)_
 
 ### Main Components
 
-| Chip                                                                   | Function         | Alternate Chip                          |
-| -----------------------------------------------------------------------|------------------|-----------------------------------------|
-| [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000) | Main CPU         | N/A                                     |
-| [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)           | Sound CPU        | In lieu of HD647180X for sound playback |
-| [**Yamaha YM3812**](https://en.wikipedia.org/wiki/Yamaha_OPL#OPL2)     | OPL2 Audio       | N/A                                     |
+| Chip                                                                   | Function         | Alternate Chip                                                                                                                                                                                                                                                       |
+| -----------------------------------------------------------------------|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000) | Main CPU         | N/A                                                                                                                                                                                                                                                                  |
+| [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)           | Sound CPU        | HD647180X uses 512 bytes of internal RAM. The z80 is code compatible with audio ROM playback. Adding the additional RAM to the top end of the address space for the stack pointer enables audio playback. None of the functions or I/O on the HD647180X is utilized. |
+| [**Yamaha YM3812**](https://en.wikipedia.org/wiki/Yamaha_OPL#OPL2)     | OPL2 Audio       | N/A                                                                                                                                                                                                                                                                  |
 
 ### Custom Components
 
@@ -96,7 +96,7 @@ _(Horror Story)_
 
 ### Audio Options
 
-- There is a toggle to disable playback of OPL2 audio.
+- There is a toggle to adjust the gain and disable playback of OPL2 audio.
 
 ### Overclock Options
 
@@ -114,14 +114,14 @@ _(Horror Story)_
 
 - Additional toggle to enable the scandoubler without changing ini settings and new scanline option for 100% is available, this draws a black line every other frame. Below is an example.
 
-<table><tr><th>Scandoubler Fx</th><th>Scanlines 25%</th><th>Scanlines 50%</th><th>Scanlines 75%</th><th>Scanlines 100%</th><tr><td><br> <p align="center"><img width="160" height="120" src="FILL"></td><td><br> <p align="center"><img width="160" height="120" src="FILL"></td><td><br> <p align="center"><img width="160" height="120" src="FILL"></td><td><br> <p align="center"><img width="160" height="120" src="FILL"></td><td><br> <p align="center"><img width="160" height="120" src="FILL"></td></tr></table> <br>
+<table><tr><th>Scandoubler Fx</th><th>Scanlines 25%</th><th>Scanlines 50%</th><th>Scanlines 75%</th><th>Scanlines 100%</th><tr><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/a7cf7266-44ad-46f9-b388-3fd791f5e01d"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/b6d2a6a6-6a19-471b-a465-10a4d9d2e788"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/89bda20b-c83c-479d-9a1c-21f1dafae5e8"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/adbea69f-2bab-4cac-a5ce-2a35af035900"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/e2610c54-132b-4b89-a110-76a44437dce1"></td></tr></table> <br>
 
 # PCB Information / Control Layout
 
-| Title                 | Joystick | Service Menu                                                                                                 | Dip Switches                                                                                              | Shared Controls | Dip Default | PCB Information |
-|-----------------------|----------|--------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|-----------------|-------------|-----------------|
-| **Same! Same! Same!** | 8-Way    | [**Service Menu**](FILL) | [**Dip Sheet**](FILL) | No              | N/A         | WIP             |
-| **Vimana**            | 8-Way    | [**Service Menu**](FILL) | [**Dip Sheet**](FILL) | No              | N/A         | WIP             |
+| Title                 | Joystick | Service Menu                                                                                              | Dip Switches                                                                                           | Shared Controls | Dip Default | PCB Information |
+|-----------------------|----------|-----------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|-----------------|-------------|-----------------|
+| **Same! Same! Same!** | 8-Way    | [**Service Menu**](FILL)                                                                                  | [**Dip Sheet**](FILL)                                                                                  | No              | N/A         | WIP             |
+| **Vimana**            | 8-Way    | [**Service Menu**](https://github.com/va7deo/vimana/assets/32810066/69896bb8-5b5f-4bc0-a855-28bdd58037e8) | [**Dip Sheet**](https://github.com/va7deo/vimana/assets/32810066/23d9f6e2-0ab6-4dc2-a273-8dbcbc3ad661) | Co-Op           | N/A         | WIP             |
 
 <br>
 
