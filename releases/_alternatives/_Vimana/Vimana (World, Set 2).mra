@@ -19,12 +19,12 @@
         <dip name="Coin B" bits="6,7" ids="1/1,1/2,1/2,1/3,2/1,1/4,2/3,1/6"/>
         <!-- DSWB -->
         <dip name="Difficulty" bits="8,9" ids="B,A,C,D"/>
-        <dip name="Bonus Life" bits="10,11" ids="70k/200k,100k/250k,100k Only,200k Only"/>
+        <dip name="Extend" bits="10,11" ids="70k/200k,100k/250k,100k Only,200k Only"/>
         <dip name="Hero Counts" bits="12,13" ids="3,5,4,2"/>
         <dip name="No Death/Stop Mode" bits="14" ids="Off,On"/>
         <dip name="Continue Play" bits="15" ids="Yes,No"/>
         <!-- TJUMP -->
-        <dip name="Region" bits="24,27" ids="Japan-0,USA,Europe,Hong Kong,Korea,Taiwan-0,Taiwan-1,USA,Hong Kong,???,???,???,???,???,???,Japan-1"/>
+        <dip name="Region" bits="16,19" ids="Japan-0,USA,Europe,Hong Kong,Korea,Taiwan-0,Taiwan-1,USA,Hong Kong,???,???,???,???,???,???,Japan-1"/>
     </switches>
 
     <buttons names="Shot/Charging Shot,Bomb,-,P1 Start,P2 Start,Coin A,Coin B,Pause" default="A,B,X,Y,R,Start"/>
