@@ -754,31 +754,6 @@ fx68k fx68k (
 
 
 always @ (posedge clk_sys) begin
-    if ( clk_10M == 1 ) begin
-        // tell 68k to wait for valid data. 0=ready 1=wait
-        // always ack when it's not program rom
-        dtack_n <= prog_rom_cs ? !prog_rom_data_valid : 0;
-        // add dsp_ctrl_cs to cpu_din
-        // select cpu data input based on what is active
-        cpu_din <= prog_rom_cs ? prog_rom_data :
-            ram_cs ? ram_dout :
-            tile_palette_cs ?  tile_palette_cpu_dout :
-            sprite_palette_cs ?  sprite_palette_cpu_dout :
-            tile_ofs_cs ? curr_tile_ofs :
-            sprite_ofs_cs ? curr_sprite_ofs :
-            tile_attr_cs ? cpu_tile_dout_attr :
-            tile_num_cs ? cpu_tile_dout_num :
-            sprite_0_cs ? sprite_0_dout :
-            sprite_1_cs ? sprite_1_dout :
-            sprite_2_cs ? sprite_2_dout :
-            sprite_3_cs ? sprite_3_dout :
-            sprite_size_cs ? sprite_size_cpu_dout :
-            frame_done_cs ? { 16 { vbl } } : // get vblank state
-            shared_ram_cs ? cpu_shared_dout :
-            vblank_cs ? { 15'b0, vbl } :
-            int_en_cs ? 16'hffff :
-            16'd0;
-    end
 end
 
 wire [15:0] cpu_shared_dout;
@@ -800,48 +775,173 @@ always @ (posedge clk_sys) begin
     if ( reset == 1 ) begin
         z80_wait_n <= 0;
         sound_wr <= 0;
-        credits <= 0;
-    end else if ( clk_3_5M == 1 ) begin
-        z80_wait_n <= 1;
-        if ( ioctl_download | ( z80_rd_n == 0 && sound_rom_1_data_valid == 0 && sound_rom_1_cs == 1 ) ) begin
-            // wait if rom is selected and data is not yet available
-            z80_wait_n <= 0;
+        int_en <= 0;
+        reset_z80_n <= 0;
+
+    end else begin
+        reset_z80_n <= cpu_reset_n_o;
+
+        // write lasts multiple cpu clocks so limit to one increment per write signal
+        if ( inc_sprite_ofs == 1 && cpu_rw == 1 ) begin
+            curr_sprite_ofs <= curr_sprite_ofs + 1;
+            inc_sprite_ofs <= 0;
         end
-        
-        if ( z80_rd_n == 0 ) begin
-            if ( sound_rom_1_cs ) begin
-                if ( sound_rom_1_data_valid ) begin
-                    z80_din <= sound_rom_1_data;
-                end else begin
-                    z80_wait_n <= 0;
-                end
-            end else if ( sound_ram_1_cs ) begin
-                z80_din <= z80_shared_dout;
-            end else if ( sound0_cs ) begin
-                z80_din <= opl_dout;
-            end else if ( p1_cs ) begin
-                z80_din <= p1 ;
-            end else if ( p2_cs ) begin
-                z80_din <= p2 ;
-            end else if ( dswa_cs ) begin
-                z80_din <= z80_dswa ;
-            end else if ( dswb_cs ) begin
-                z80_din <= ~z80_dswb ;
-            end else if ( tjump_cs ) begin
-                z80_din <= 8'hc0 | ~z80_tjump ;
-            end else if ( system_cs ) begin
-                z80_din <= system ;
+    
+        if ( clk_10M == 1 ) begin
+            // tell 68k to wait for valid data. 0=ready 1=wait
+            // always ack when it's not program rom
+            dtack_n <= prog_rom_cs ? !prog_rom_data_valid : 0;
+            // add dsp_ctrl_cs to cpu_din
+            // select cpu data input based on what is active
+            if ( pcb == 0 ) begin
+                cpu_din <= prog_rom_cs ? prog_rom_data :
+                    ram_cs ? ram_dout :
+                    tile_palette_cs ?  tile_palette_cpu_dout :
+                    sprite_palette_cs ?  sprite_palette_cpu_dout :
+                    tile_ofs_cs ? curr_tile_ofs :
+                    sprite_ofs_cs ? curr_sprite_ofs :
+                    tile_attr_cs ? cpu_tile_dout_attr :
+                    tile_num_cs ? cpu_tile_dout_num :
+                    sprite_0_cs ? sprite_0_dout :
+                    sprite_1_cs ? sprite_1_dout :
+                    sprite_2_cs ? sprite_2_dout :
+                    sprite_3_cs ? sprite_3_dout :
+                    sprite_size_cs ? sprite_size_cpu_dout :
+                    frame_done_cs ? { 16 { vbl } } : // get vblank state
+                    shared_ram_cs ? cpu_shared_dout :
+                    vblank_cs ? { 15'b0, vbl } :
+                    int_en_cs ? 16'hffff :
+                    16'd0;
                 
             end else begin
-                z80_din <= 8'h00;
+                // same same same
+                cpu_din <= prog_rom_cs ? prog_rom_data :
+                    ram_cs ? ram_dout :
+                    tile_palette_cs ?  tile_palette_cpu_dout :
+                    sprite_palette_cs ?  sprite_palette_cpu_dout :
+                    tile_ofs_cs ? curr_tile_ofs :
+                    sprite_ofs_cs ? curr_sprite_ofs :
+                    tile_attr_cs ? cpu_tile_dout_attr :
+                    tile_num_cs ? cpu_tile_dout_num :
+                    sprite_0_cs ? sprite_0_dout :
+                    sprite_1_cs ? sprite_1_dout :
+                    sprite_2_cs ? sprite_2_dout :
+                    sprite_3_cs ? sprite_3_dout :
+                    sprite_size_cs ? sprite_size_cpu_dout :
+                    p1_cs ? { 8'h00, p1[7:0] }:
+                    p2_cs ? { 8'h00, p2[7:0] } :
+                    dswa_cs ? { 8'h00, z80_dswa[7:0] } :
+                    dswb_cs ? { 8'h00, z80_dswb[7:0] } :
+                    system_cs ? { 8'h00, system[7:0] } :
+                    tjump_cs ? { 8'h00, 1'b1, z80_tjump[6:0] } :
+                    frame_done_cs ? { 15'b0, vbl } : // get vblank state
+                    vblank_cs ? { 15'b0, vbl } :
+                    int_en_cs ? 16'hffff :
+                    16'd0;
             end
+                
+            if (  cpu_rw == 0 ) begin
+                if ( tile_ofs_cs ) begin
+                    curr_tile_ofs <= cpu_dout;
+                end
+                if ( int_en_cs ) begin
+                    int_en <= cpu_dout[0];
+                end
+                if ( crtc_cs ) begin
+                    crtc[ cpu_a[2:1] ] <= cpu_dout;
+                end
+                if ( bcu_flip_cs ) begin
+                    tile_flip <= cpu_dout[0];
+                end
+                if ( fcu_flip_cs ) begin
+                    sprite_flip <= cpu_dout[15];
+                end
+                if ( sprite_ofs_cs ) begin
+                    // mask out valid range
+                    curr_sprite_ofs <= { 6'b0, cpu_dout[9:0] };
+                end
+                if ( scroll_ofs_x_cs ) begin
+                    scroll_ofs_x <= cpu_dout;
+                end
+                if ( scroll_ofs_y_cs ) begin
+                    scroll_ofs_y <= cpu_dout;
+                end
+                // x layer values are even addresses
+                if ( scroll_cs ) begin
+                    if ( cpu_a[1] == 0 ) begin
+                        scroll_x[ cpu_a[3:2] ] <= cpu_dout[15:7];
+                    end else begin
+                        scroll_y[ cpu_a[3:2] ] <= cpu_dout[15:7];
+                    end
+                end
+                // offset needs to be auto-incremented
+                if ( sprite_cs | sprite_size_cs ) begin
+                    inc_sprite_ofs <= 1;
+                end
+                if ( reset_z80_cs ) begin
+                    // the pcb writes to a latch to control the reset 
+                    reset_z80_n <= cpu_dout[0];
+                end
+                
+                if ( sound_latch_w_cs ) begin
+                    sound_latch <= cpu_dout[7:0];
+                    sound_latch_set <= 1;
+                end
+            end            
         end
-        sound_wr <= 0;
-        if ( z80_wr_n == 0 ) begin
-            if ( sound0_cs | sound1_cs ) begin
-                sound_data  <= z80_dout;
-                sound_addr <= { 1'b0, sound1_cs }; 
-                sound_wr <= 1;
+
+        if ( clk_3_5M == 1 ) begin
+            z80_wait_n <= 1;
+            if ( ioctl_download | ( z80_rd_n == 0 && sound_rom_1_data_valid == 0 && sound_rom_1_cs == 1 ) ) begin
+                // wait if rom is selected and data is not yet available
+                z80_wait_n <= 0;
+            end
+            
+            if ( z80_rd_n == 0 ) begin
+                if ( sound_rom_1_cs ) begin
+                    if ( sound_rom_1_data_valid ) begin
+                        z80_din <= sound_rom_1_data;
+                    end else begin
+                        z80_wait_n <= 0;
+                    end
+                end else if ( sound_ram_1_cs ) begin
+                    z80_din <= z80_shared_dout;
+                end else if ( sound0_cs ) begin
+                    z80_din <= opl_dout;
+                end else if ( sound_latch_r_cs ) begin
+                    z80_din <= sound_latch ;
+                end else if ( sound_status_cs ) begin
+                    z80_din <= sound_latch_set ? 8'hff : 8'h00 ;
+                end else begin
+                    z80_din <= 8'h00;
+                end
+                
+                if ( pcb == 0 ) begin
+                    if ( p1_cs ) begin
+                        z80_din <= p1 ;
+                    end else if ( p2_cs ) begin
+                        z80_din <= p2 ;
+                    end else if ( dswa_cs ) begin
+                        z80_din <= z80_dswa ;
+                    end else if ( dswb_cs ) begin
+                        z80_din <= ~z80_dswb ;
+                    end else if ( tjump_cs ) begin
+                        z80_din <= 8'hc0 | ~z80_tjump ;
+                    end else if ( system_cs ) begin
+                        z80_din <= system ;
+                    end
+                end
+            end
+            sound_wr <= 0;
+            if ( z80_wr_n == 0 ) begin
+                if ( sound0_cs | sound1_cs ) begin
+                    sound_data  <= z80_dout;
+                    sound_addr <= { 1'b0, sound1_cs }; 
+                    sound_wr <= 1;
+                end else if ( sound_done_cs ) begin
+                    sound_latch <= z80_dout ;
+                    sound_latch_set <= 0;
+                end
             end
         end
     end
@@ -1022,7 +1122,6 @@ wire sprite_cs; // *** offset needs to be auto-incremented
 wire sprite_size_cs; // *** offset needs to be auto-incremented
 wire sprite_ram_cs;
 
-wire credits_cs;
 wire p1_cs;
 wire p2_cs;
 wire dswa_cs;
@@ -1031,6 +1130,11 @@ wire system_cs;
 wire tjump_cs;
 wire sound0_cs;
 wire sound1_cs;
+wire sound_latch_cs;
+wire sound_latch_w_cs;
+wire sound_latch_r_cs;
+wire sound_status_cs;
+wire sound_done_cs;
 
 chip_select cs (.*);
 
@@ -1046,6 +1150,9 @@ wire sound_ram_1_cs   = ( MREQ_n == 0 && z80_addr >= 16'h8000 && z80_addr <= 16'
 
 reg int_en;
 reg int_ack;
+
+reg sound_latch_set;
+reg [7:0] sound_latch ;
 
 reg [1:0] vbl_sr;
 
@@ -1076,67 +1183,6 @@ reg [15:0] scroll_y_latch [3:0];
 reg inc_sprite_ofs;
 
 reg [15:0] crtc[4];
-
-always @ (posedge clk_sys) begin
-    if ( reset == 1 ) begin
-        int_en <= 0;
-        reset_z80_n <= 0;
-    end else begin
-//        if ( pcb != 3 && pcb != 4 ) begin
-            // if the pcb uses the 68k reset pin to drive the reset line
-            reset_z80_n <= cpu_reset_n_o;
-//        end
-        // write asserted and rising cpu clock
-        if (  clk_10M == 1 && cpu_rw == 0 ) begin
-            if ( tile_ofs_cs ) begin
-                curr_tile_ofs <= cpu_dout;
-            end
-            if ( int_en_cs ) begin
-                int_en <= cpu_dout[0];
-            end
-            if ( crtc_cs ) begin
-                crtc[ cpu_a[2:1] ] <= cpu_dout;
-            end
-            if ( bcu_flip_cs ) begin
-                tile_flip <= cpu_dout[0];
-            end
-            if ( fcu_flip_cs ) begin
-                sprite_flip <= cpu_dout[15];
-            end
-            if ( sprite_ofs_cs ) begin
-                // mask out valid range
-                curr_sprite_ofs <= { 6'b0, cpu_dout[9:0] };
-            end
-            if ( scroll_ofs_x_cs ) begin
-                scroll_ofs_x <= cpu_dout;
-            end
-            if ( scroll_ofs_y_cs ) begin
-                scroll_ofs_y <= cpu_dout;
-            end
-            // x layer values are even addresses
-            if ( scroll_cs ) begin
-                if ( cpu_a[1] == 0 ) begin
-                    scroll_x[ cpu_a[3:2] ] <= cpu_dout[15:7];
-                end else begin
-                    scroll_y[ cpu_a[3:2] ] <= cpu_dout[15:7];
-                end
-            end
-            // offset needs to be auto-incremented
-            if ( sprite_cs | sprite_size_cs ) begin
-                inc_sprite_ofs <= 1;
-            end
-            if ( reset_z80_cs ) begin
-                // the pcb writes to a latch to control the reset 
-                reset_z80_n <= cpu_dout[0];
-            end
-        end
-        // write lasts multiple cpu clocks so limit to one increment per write signal
-        if ( inc_sprite_ofs == 1 && cpu_rw == 1 ) begin
-            curr_sprite_ofs <= curr_sprite_ofs + 1;
-            inc_sprite_ofs <= 0;
-        end
-    end
-end
 
 reg [15:0] scroll_x_total [3:0];
 reg [15:0] scroll_y_total [3:0];
