@@ -57,14 +57,6 @@ module chip_select
 localparam pcb_vimana   = 0;
 localparam pcb_samesame = 1;
 
-//function m68k_cs;
-//        input [23:0] base_address;
-//        input  [7:0] width;
-//begin
-//    m68k_cs = ( cpu_a >> width == base_address >> width ) & !cpu_as_n;
-//end
-//endfunction
-
 function m68k_cs;
         input [23:0] start_address;
         input [23:0] end_address;

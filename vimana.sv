@@ -699,6 +699,8 @@ reg  [15:0] cpu_din;
 
 // CPU inputs
 reg  dtack_n;    // Data transfer ack (always ready)
+
+reg  ipl1_n;
 reg  ipl2_n;
 
 wire reset_n;
@@ -742,7 +744,7 @@ fx68k fx68k (
     .BGACKn(1'b1),
     
     .IPL0n(1'b1),
-    .IPL1n(1'b1),
+    .IPL1n(ipl1_n),
     .IPL2n(ipl2_n),
 
     // busses
@@ -775,8 +777,8 @@ always @ (posedge clk_sys) begin
     if ( reset == 1 ) begin
         z80_wait_n <= 0;
         sound_wr <= 0;
-        int_en <= 0;
-        reset_z80_n <= 0;
+        int_en <= 1;
+        reset_z80_n <= 1;
 
     end else begin
         reset_z80_n <= cpu_reset_n_o;
@@ -1073,7 +1075,7 @@ always @ * begin
 end
 
 T80pa u_cpu(
-    .RESET_n    ( reset_n ),
+    .RESET_n    ( reset_n & reset_z80_n ),
     .CLK        ( clk_sys ),
     .CEN_p      ( clk_3_5M ),
     .CEN_n      ( ~clk_3_5M ),
@@ -1160,6 +1162,7 @@ reg [1:0] vbl_sr;
 always @ (posedge clk_sys ) begin
     if ( reset == 1 ) begin
         ipl2_n <= 1;
+        ipl1_n <= 1;
         int_ack <= 0;
     end else begin
         vbl_sr <= { vbl_sr[0], vbl };
@@ -1168,8 +1171,13 @@ always @ (posedge clk_sys ) begin
         end
         if ( vbl_sr == 2'b01 ) begin// rising edge
             ipl2_n <= ~int_en;
+        end else if ( vbl_sr == 2'b10 ) begin
+            if ( pcb == 1 ) begin
+                ipl1_n <= 0;
+            end
         end else if ( int_ack == 1 || vbl_sr == 2'b10 ) begin
             ipl2_n <= 1;
+            ipl1_n <= 1;
         end
     end
 end
