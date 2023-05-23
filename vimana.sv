@@ -202,7 +202,7 @@ assign BUTTONS = 0;
 // 0         1         2         3          4         5         6   
 // 01234567890123456789012345678901 23456789012345678901234567890123
 // 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
-// X  XXXXXXXXXXXX    X X XXXXXXXX             XX           XXXXXXXX
+// X  XXXXXXXX XX     X X XXXXXXXX             XX           XXXXXXXX
 
 wire [1:0] aspect_ratio = status[9:8];
 wire       orientation  = ~status[3];
@@ -249,15 +249,10 @@ localparam CONF_STR = {
     "P1-;",
     "P2,Audio Settings;",
     "P2-;",
-    "P2OC,Audio Mix,Mono,Stereo;",
-    "P2-;",
-    "P2OB,OPL2 Audio,On,Off;",
-    "P2oBC,OPL2 Volume,Default,75%,50%,25%;",
+    "P2oBC,OPL2 Volume,Default,50%,25%,0%;",
     "P2-;",
     "-;",
     "P3,Core Options;",
-    "P3-;",
-    "P3OE,Service Menu,Off,On;",
     "P3-;",
     "P3o6,Swap P1/P2 Joystick,Off,On;",
     "P3-;",
@@ -423,7 +418,7 @@ always @ * begin
         coin_b    <= joy0[10] | joy1[10] | key_coin_b;
 
         b_pause   <= joy0[11] | key_pause;
-        service   <= key_test | status[14];
+        service   <= key_test;
 end
 
 // Keyboard handler
@@ -977,8 +972,7 @@ jtopl #(.OPL_TYPE(2)) jtopl2
     .sample(opl_sample_clk)
 );
 
-wire      audio_en    = status[11];       // audio enable
-wire      stereo_en   = status[12];       // mono to stereo toggle
+wire       audio_en   = status[11];       // audio enable
 
 wire [1:0] opl2_level = status[44:43];    // opl2 audio mix
 
@@ -991,72 +985,28 @@ always @( posedge clk_sys, posedge reset ) begin
         opl2_mult<=0;
     end else begin
     case( opl2_level )
-        0: opl2_mult <= 8'h10;    // 100%
-        1: opl2_mult <= 8'h0c;    // 75%
-        2: opl2_mult <= 8'h08;    // 50%
-        3: opl2_mult <= 8'h04;    // 25%
+        0: opl2_mult <= 8'h0c;    // 75%
+        1: opl2_mult <= 8'h08;    // 50%
+        2: opl2_mult <= 8'h04;    // 25%
+        3: opl2_mult <= 8'h00;    // 0%
     endcase
     end
 end
 
 wire signed [15:0] mono;
-wire signed [15:0] left_stereo;
-wire signed [15:0] right_stereo;
-
-wire signed [15:0] left_mixed;
-wire signed [15:0] right_mixed;
-
-assign left_mixed  = ( stereo_en == 0 ) ? mono : left_stereo;
-assign right_mixed = ( stereo_en == 0 ) ? mono : right_stereo;
-
-jtframe_mixer #(.W0(16), .WOUT(16)) u_mix_left(
-    .rst    ( reset        ),
-    .clk    ( clk_sys      ),
-    .cen    ( 1'b1         ),
-    // input signals
-    .ch0    ( sample       ),
-    .ch1    ( 16'd0        ),
-    .ch2    ( 16'd0        ),
-    .ch3    ( 16'd0        ),
-    // gain for each channel in 4.4 fixed point format
-    .gain0  ( opl2_mult    ),
-    .gain1  ( 8'd0         ),
-    .gain2  ( 8'd0         ),
-    .gain3  ( 8'd0         ),
-    .mixed  ( left_stereo  ),
-    .peak   (              )
-);
-
-jtframe_mixer #(.W0(16), .WOUT(16)) u_mix_right(
-    .rst    ( reset        ),
-    .clk    ( clk_sys      ),
-    .cen    ( 1'b1         ),
-    // input signals
-    .ch0    ( sample       ),
-    .ch1    ( 16'd0        ),
-    .ch2    ( 16'd0        ),
-    .ch3    ( 16'd0        ),
-    // gain for each channel in 4.4 fixed point format
-    .gain0  ( opl2_mult    ),
-    .gain1  ( 8'd0         ),
-    .gain2  ( 8'd0         ),
-    .gain3  ( 8'd0         ),
-    .mixed  ( right_stereo ),
-    .peak   (              )
-);
 
 jtframe_mixer #(.W0(16), .WOUT(16)) u_mix_mono(
     .rst    ( reset        ),
     .clk    ( clk_sys      ),
     .cen    ( 1'b1         ),
     // input signals
-    .ch0    ( left_stereo  ),
-    .ch1    ( right_stereo ),
-    .ch2    (              ),
-    .ch3    (              ),
+    .ch0    ( sample       ),
+    .ch1    ( 16'd0        ),
+    .ch2    ( 16'd0        ),
+    .ch3    ( 16'd0        ),
     // gain for each channel in 4.4 fixed point format
-    .gain0  ( 8'h0c        ),
-    .gain1  ( 8'h0c        ),
+    .gain0  ( opl2_mult    ),
+    .gain1  ( 8'd0         ),
     .gain2  ( 8'd0         ),
     .gain3  ( 8'd0         ),
     .mixed  ( mono         ),
@@ -1066,8 +1016,8 @@ jtframe_mixer #(.W0(16), .WOUT(16)) u_mix_mono(
 always @ * begin
     if ( audio_en == 0 ) begin
         // mix audio
-        AUDIO_L <= left_mixed;
-        AUDIO_R <= right_mixed;
+        AUDIO_L <= mono;
+        AUDIO_R <= mono;
     end else begin
         AUDIO_L <= 0;
         AUDIO_R <= 0;

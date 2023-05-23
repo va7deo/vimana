@@ -1,9 +1,11 @@
 
 # Toaplan (Vimana) FPGA Implementation
 
-FPGA compatible core of Toaplan Version 1 arcade hardware for [**MiSTerFPGA**](https://github.com/MiSTer-devel/Main_MiSTer/wiki) written by [**Darren Olafson**](https://twitter.com/Darren__O). Based on schematics and verified against Vimana (TP-019).
+FPGA compatible core of Toaplan Version 1 arcade hardware for [**MiSTerFPGA**](https://github.com/MiSTer-devel/Main_MiSTer/wiki) written by [**Darren Olafson**](https://twitter.com/Darren__O). Based on OutZone (TP-018) schematics and verified against Vimana (TP-019).
 
 The intent is for this core to be a 1:1 implementation of Toaplan V1 hardware. Currently in beta state, this core is in active development with assistance from [**atrac17**](https://github.com/atrac17).
+
+Rally Bike (TP-012), Horror Story / Demon's World (TP-016), Tatsujin (TP-013B), Hellfire (TP-014), Zero Wing (TP-015) and OutZone (TP-018) are also Toaplan V1 hardware and have separate repositories located [here](https://github.com/va7deo?tab=repositories).
 
 ![vimana_github](https://github.com/va7deo/vimana/assets/32810066/74ce0f07-9a77-46c0-aa7c-deef29396fbc)
 
@@ -28,6 +30,7 @@ The intent is for this core to be a 1:1 implementation of Toaplan V1 hardware. C
 # Known Issues / Tasks
 
 - [**OPL2 Audio**](https://github.com/jotego/jtopl/issues/11)  **[Issue]**  
+- Verify irq timings on TP-017 against video timings from PCB capture (no PCB on-hand)  **[Issue]**  
 - Timing issues with jtframe_mixer module; false paths added to sdc (may need refactor?)  **[Task]**  
 - Attempt usage of y80e core for HD647180X CPU  **[Task]**  
 
@@ -120,7 +123,7 @@ _(Vimana)_
 
 | Title                 | Joystick | Service Menu                                                                                              | Dip Switches                                                                                           | Shared Controls | Dip Default | PCB Information |
 |-----------------------|----------|-----------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|-----------------|-------------|-----------------|
-| **Same! Same! Same!** | 8-Way    | [**Service Menu**](FILL)                                                                                  | [**Dip Sheet**](FILL)                                                                                  | No              | N/A         | WIP             |
+| **Same! Same! Same!** | 8-Way    | [**Service Menu**](https://github.com/va7deo/vimana/assets/32810066/2b15a29f-ffa2-44d9-af04-90002dfcc8cf) | [**Dip Sheet**](https://github.com/va7deo/vimana/assets/32810066/8a01f9db-191f-4852-91a2-9304cf049ba1) | Co-Op / Single  | Upright     | WIP             |
 | **Vimana**            | 8-Way    | [**Service Menu**](https://github.com/va7deo/vimana/assets/32810066/69896bb8-5b5f-4bc0-a855-28bdd58037e8) | [**Dip Sheet**](https://github.com/va7deo/vimana/assets/32810066/23d9f6e2-0ab6-4dc2-a273-8dbcbc3ad661) | Co-Op           | N/A         | WIP             |
 
 <br>
