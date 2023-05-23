@@ -5,7 +5,7 @@ FPGA compatible core of Toaplan Version 1 arcade hardware for [**MiSTerFPGA**](h
 
 The intent is for this core to be a 1:1 implementation of Toaplan V1 hardware. Currently in beta state, this core is in active development with assistance from [**atrac17**](https://github.com/atrac17).
 
-![vimana_github](https://github.com/va7deo/vimana/assets/32810066/9861ae27-75ba-488e-b7f8-69d656e1e110)
+![vimana_github](https://github.com/va7deo/vimana/assets/32810066/74ce0f07-9a77-46c0-aa7c-deef29396fbc)
 
 ## Supported Titles
 
