@@ -249,7 +249,7 @@ localparam CONF_STR = {
     "P1-;",
     "P2,Audio Settings;",
     "P2-;",
-    "P2oBC,OPL2 Volume,Default,75%,50%,25%;",
+    "P2oBC,OPL2 Volume,Default,50%,25%,0%;",
     "P2-;",
     "-;",
     "P3,Core Options;",
