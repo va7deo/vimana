@@ -114,22 +114,6 @@ set_clock_uncertainty -fall_from [get_clocks {pll_audio|pll_audio_inst|altera_pl
 set_clock_uncertainty -fall_from [get_clocks {pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}] -rise_to [get_clocks {pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}] -hold 0.060  
 set_clock_uncertainty -fall_from [get_clocks {pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}] -fall_to [get_clocks {pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}] -setup 0.200  
 set_clock_uncertainty -fall_from [get_clocks {pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}] -fall_to [get_clocks {pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}] -hold 0.060  
-																																																														  
-																																																														 
-																																																														  
-																																																														 
-																																																														  
-																																																														 
-																																																														  
-																																																														 
-																								
-																								
-																								
-																								
-																																													  
-																																													  
-																																													  
-																																													  
 
 
 #**************************************************************

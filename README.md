@@ -11,10 +11,10 @@ Rally Bike (TP-012), Horror Story / Demon's World (TP-016), Tatsujin (TP-013B), 
 
 ## Supported Titles
 
-| Title                                                               | PCB<br>Number | Status      | Released |
-|---------------------------------------------------------------------|---------------|-------------|----------|
-| [**Same! Same! Same!**](https://en.wikipedia.org/wiki/Fire_Shark)   | TP-017        | Implemented | Yes      |
-| [**Vimana**](https://en.wikipedia.org/wiki/Vimana_%28video_game%29) | TP-019        | Implemented | Yes      |
+| Title                                                                               | PCB<br>Number | Status      | Released |
+|-------------------------------------------------------------------------------------|---------------|-------------|----------|
+| [**Same! Same! Same! / Fire Shark**](https://en.wikipedia.org/wiki/Fire_Shark)      | TP-017        | Implemented | Yes      |
+| [**Vimana**](https://en.wikipedia.org/wiki/Vimana_%28video_game%29)                 | TP-019        | Implemented | Yes      |
 
 ## External Modules
 
@@ -78,9 +78,9 @@ _(Vimana)_
 
 ### Additional Components
 
-| Chip                                                      | Function                 | PCB<br>Number        | Status          | Alternate Chip                                               | Usage                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-|-----------------------------------------------------------|--------------------------|----------------------|-----------------|--------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**HD647180X**](https://en.wikipedia.org/wiki/Zilog_Z180) | Sound CPU & I/O Handling | **TP-017<br>TP-019** | Not Implemented | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80) | The HD647180X uses 512 bytes of internal RAM. The z80 is compatible with the HD647180X audio ROM playback. <br><br> Implementing the additional RAM enables the top end of address spacing used by the stack pointer enables audio playback. <br><br> None of the functions or I/O on the HD647180X are utilized. This is not a **"hack"**, it could be done on hardware easily using a z180 that has the additional internal RAM and adding an additional ROM with the sound CPU code. |
+| Chip                                                      | Function                 | PCB<br>Number        | Status          | Alternate Chip                                               | Note                                                                                                                                                                                                                                                       |
+|-----------------------------------------------------------|--------------------------|----------------------|-----------------|--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [**HD647180X**](https://en.wikipedia.org/wiki/Zilog_Z180) | Sound CPU & I/O Handling | **TP-017<br>TP-019** | Not Implemented | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80) | It was discovered that the audio ROM is Z80 compatible code and the HD647180X is backwards compatible with the Z80 but has an additional 512 bytes of internal RAM. <br><br> None of the specific instructions or I/O ports of the HD647180X are utilized. |
 
 # Core Features
 
@@ -119,13 +119,9 @@ _(Vimana)_
 
 <table><tr><th>Scandoubler Fx</th><th>Scanlines 25%</th><th>Scanlines 50%</th><th>Scanlines 75%</th><th>Scanlines 100%</th><tr><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/a7cf7266-44ad-46f9-b388-3fd791f5e01d"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/b6d2a6a6-6a19-471b-a465-10a4d9d2e788"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/89bda20b-c83c-479d-9a1c-21f1dafae5e8"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/adbea69f-2bab-4cac-a5ce-2a35af035900"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/e2610c54-132b-4b89-a110-76a44437dce1"></td></tr></table> <br>
 
-### Audio Options
+### Scroll Debug Option
 
-- There is a toggle to adjust the gain and disable playback of OPL2 audio.
-
-### Audio Options
-
-- There is a toggle to adjust the gain and disable playback of OPL2 audio.
+- There is a toggle to enable the third button for "Fast Scroll" in Vimana and a fourth button for the "Slow Scroll" feature in in Vimana and Same! Same! Same! See the "PCB Information" section for further information.
 
 # PCB Information / Control Layout
 

@@ -41,15 +41,15 @@ module chip_select
     output       dswb_cs,
     output       system_cs,
     output       tjump_cs,
-    
+
     output       sound_latch_w_cs,
-    output       sound_latch_r_cs,    
+    output       sound_latch_r_cs,
     output       sound_status_cs,
     output       sound_done_cs,
-    
+
     output       sound0_cs,
     output       sound1_cs,
-    
+
     // other params
     output reg [15:0] scroll_y_offset
 );
@@ -120,6 +120,7 @@ always @(*) begin
             sound_latch_r_cs  = 0;
             sound_status_cs   = 0;
             sound_done_cs     = 0;
+
             sound0_cs         = z80_cs( 8'h87 );
             sound1_cs         = z80_cs( 8'h8f );
         end
@@ -162,14 +163,14 @@ always @(*) begin
             sprite_size_cs    = m68k_cs( 24'h1c0006, 24'h1c0007 );
 
             reset_z80_cs      = 0;
-            
-            sound_status_cs   = z80_cs( 8'h63 ); 
+
+            sound_status_cs   = z80_cs( 8'h63 );
 
             sound0_cs         = z80_cs( 8'h80 );
             sound1_cs         = z80_cs( 8'h81 );
-            
-            sound_latch_r_cs  = z80_cs( 8'ha0 ); 
-            sound_done_cs     = z80_cs( 8'hb0 ); 
+
+            sound_latch_r_cs  = z80_cs( 8'ha0 );
+            sound_done_cs     = z80_cs( 8'hb0 );
         end
 
         default:;
