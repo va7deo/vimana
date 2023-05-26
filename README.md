@@ -5,7 +5,7 @@ FPGA compatible core of Toaplan Version 1 arcade hardware for [**MiSTerFPGA**](h
 
 The intent is for this core to be a 1:1 implementation of Toaplan V1 hardware. Currently in beta state, this core is in active development with assistance from [**atrac17**](https://github.com/atrac17).
 
-Rally Bike (TP-012), Horror Story / Demon's World (TP-016), Tatsujin (TP-013B), Hellfire (TP-014), Zero Wing (TP-015) and OutZone (TP-018) are also Toaplan V1 hardware and have separate repositories located [here](https://github.com/va7deo?tab=repositories).
+Rally Bike (TP-012), Horror Story / Demon's World (TP-016), Tatsujin (TP-013B), Hellfire (TP-014), Zero Wing (TP-015) and OutZone (TP-018) are also Toaplan V1 hardware and have separate repositories located [**here**](https://github.com/va7deo?tab=repositories).
 
 ![vimana_github](https://github.com/va7deo/vimana/assets/32810066/74ce0f07-9a77-46c0-aa7c-deef29396fbc)
 
@@ -13,8 +13,8 @@ Rally Bike (TP-012), Horror Story / Demon's World (TP-016), Tatsujin (TP-013B), 
 
 | Title                                                               | PCB<br>Number | Status      | Released |
 |---------------------------------------------------------------------|---------------|-------------|----------|
-| [**Same! Same! Same!**](https://en.wikipedia.org/wiki/Fire_Shark  ) | TP-017        | Implemented | No       |
-| [**Vimana**](https://en.wikipedia.org/wiki/Vimana_%28video_game%29) | TP-019        | Implemented | No       |
+| [**Same! Same! Same!**](https://en.wikipedia.org/wiki/Fire_Shark)   | TP-017        | Implemented | Yes      |
+| [**Vimana**](https://en.wikipedia.org/wiki/Vimana_%28video_game%29) | TP-019        | Implemented | Yes      |
 
 ## External Modules
 
@@ -24,15 +24,15 @@ Rally Bike (TP-012), Horror Story / Demon's World (TP-016), Tatsujin (TP-013B), 
 | [**t80**](https://opencores.org/projects/t80)                                         | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)                | Daniel Wallner                                 |
 | [**jtopl2**](https://github.com/jotego/jtopl)                                         | [**Yamaha OPL2**](https://en.wikipedia.org/wiki/Yamaha_OPL#OPL2)            | Jose Tejada                                    |
 | [**yc_out**](https://github.com/MikeS11/MiSTerFPGA_YC_Encoder)                        | [**Y/C Video Module**](https://en.wikipedia.org/wiki/S-Video)               | Mike Simone                                    |
-| [**mem**](https://github.com/MiSTer-devel/Arcade-Rygar_MiSTer/tree/master/src/mem)    | SDRAM Controller / Rom Downloader                                           | Josh Bassett, modified by Darren Olafson       |
-| [**core_template**](https://github.com/MiSTer-devel/Template_MiSTer)                  | MiSTer Framework Template                                                   | sorgelig, modified by Darren Olafson / atrac17 |
+| [**mem**](https://github.com/MiSTer-devel/Arcade-Rygar_MiSTer/tree/master/src/mem)    | SDRAM Controller / Rom Downloader                                           | Josh Bassett; modified by Darren Olafson       |
+| [**core_template**](https://github.com/MiSTer-devel/Template_MiSTer)                  | MiSTer Framework Template                                                   | sorgelig; modified by Darren Olafson / atrac17 |
 
 # Known Issues / Tasks
 
 - [**OPL2 Audio**](https://github.com/jotego/jtopl/issues/11)  **[Issue]**  
 - Verify irq timings on TP-017 against video timings from PCB capture (no PCB on-hand)  **[Issue]**  
 - Timing issues with jtframe_mixer module; false paths added to sdc (may need refactor?)  **[Task]**  
-- Attempt usage of y80e core for HD647180X CPU  **[Task]**  
+- Attempt usage of y80e core for HD647180X CPU if functional with Ghox  **[Task]**  
 
 # PCB Check List
 
@@ -61,11 +61,11 @@ _(Vimana)_
 
 ### Main Components
 
-| Chip                                                                   | Function         | Alternate Chip                                                                                                                                                                                                                                                       |
-| -----------------------------------------------------------------------|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000) | Main CPU         | N/A                                                                                                                                                                                                                                                                  |
-| [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)           | Sound CPU        | HD647180X uses 512 bytes of internal RAM. The z80 is code compatible with audio ROM playback. Adding the additional RAM to the top end of the address space for the stack pointer enables audio playback. None of the functions or I/O on the HD647180X is utilized. |
-| [**Yamaha YM3812**](https://en.wikipedia.org/wiki/Yamaha_OPL#OPL2)     | OPL2 Audio       | N/A                                                                                                                                                                                                                                                                  |
+| Chip                                                                   | Function         |
+| -----------------------------------------------------------------------|------------------|
+| [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000) | Main CPU         |
+| [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)           | Sound CPU        |
+| [**Yamaha YM3812**](https://en.wikipedia.org/wiki/Yamaha_OPL#OPL2)     | OPL2 Audio       |
 
 ### Custom Components
 
@@ -78,9 +78,9 @@ _(Vimana)_
 
 ### Additional Components
 
-| Chip                                                      | Function                 | PCB<br>Number        | Status          |
-|-----------------------------------------------------------|--------------------------|----------------------|-----------------|
-| [**HD647180X**](https://en.wikipedia.org/wiki/Zilog_Z180) | Sound CPU & I/O Handling | **TP-017<br>TP-019** | Not Implemented |
+| Chip                                                      | Function                 | PCB<br>Number        | Status          | Alternate Chip                                               | Usage                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+|-----------------------------------------------------------|--------------------------|----------------------|-----------------|--------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [**HD647180X**](https://en.wikipedia.org/wiki/Zilog_Z180) | Sound CPU & I/O Handling | **TP-017<br>TP-019** | Not Implemented | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80) | The HD647180X uses 512 bytes of internal RAM. The z80 is compatible with the HD647180X audio ROM playback. <br><br> Implementing the additional RAM enables the top end of address spacing used by the stack pointer enables audio playback. <br><br> None of the functions or I/O on the HD647180X are utilized. This is not a **"hack"**, it could be done on hardware easily using a z180 that has the additional internal RAM and adding an additional ROM with the sound CPU code. |
 
 # Core Features
 
@@ -119,16 +119,24 @@ _(Vimana)_
 
 <table><tr><th>Scandoubler Fx</th><th>Scanlines 25%</th><th>Scanlines 50%</th><th>Scanlines 75%</th><th>Scanlines 100%</th><tr><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/a7cf7266-44ad-46f9-b388-3fd791f5e01d"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/b6d2a6a6-6a19-471b-a465-10a4d9d2e788"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/89bda20b-c83c-479d-9a1c-21f1dafae5e8"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/adbea69f-2bab-4cac-a5ce-2a35af035900"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/e2610c54-132b-4b89-a110-76a44437dce1"></td></tr></table> <br>
 
+### Audio Options
+
+- There is a toggle to adjust the gain and disable playback of OPL2 audio.
+
+### Audio Options
+
+- There is a toggle to adjust the gain and disable playback of OPL2 audio.
+
 # PCB Information / Control Layout
 
-| Title                 | Joystick | Service Menu                                                                                              | Dip Switches                                                                                           | Shared Controls | Dip Default | PCB Information |
-|-----------------------|----------|-----------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|-----------------|-------------|-----------------|
-| **Same! Same! Same!** | 8-Way    | [**Service Menu**](https://github.com/va7deo/vimana/assets/32810066/2b15a29f-ffa2-44d9-af04-90002dfcc8cf) | [**Dip Sheet**](https://github.com/va7deo/vimana/assets/32810066/8a01f9db-191f-4852-91a2-9304cf049ba1) | Co-Op / Single  | Upright     | WIP             |
-| **Vimana**            | 8-Way    | [**Service Menu**](https://github.com/va7deo/vimana/assets/32810066/69896bb8-5b5f-4bc0-a855-28bdd58037e8) | [**Dip Sheet**](https://github.com/va7deo/vimana/assets/32810066/23d9f6e2-0ab6-4dc2-a273-8dbcbc3ad661) | Co-Op           | N/A         | WIP             |
+| Title                 | Joystick | Service Menu                                                                                              | Dip Switches                                                                                           | Shared Controls | Dip Default | PCB Information                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+|-----------------------|----------|-----------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|-----------------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Same! Same! Same!** | 8-Way    | [**Service Menu**](https://github.com/va7deo/vimana/assets/32810066/2b15a29f-ffa2-44d9-af04-90002dfcc8cf) | [**Dip Sheet**](https://github.com/va7deo/vimana/assets/32810066/8a01f9db-191f-4852-91a2-9304cf049ba1) | Co-Op / Single  | Upright     | The default version of Same! Same! Same! / Fire Shark is "samesame2". Featuring two players and retaining most of the balance of "samesame". There are several difference between the regional variants; for further information visit the [**Same! Same! Same!**](https://shmups.wiki/library/Same!_Same!_Same!) shmups wikipedia. <br><br> Enabling the "No Death/Stop" dipswitch enables in-game pause by pressing P2 Start; pressing P2 Start returns to game. There is a slow motion debug setting; press P1 and P2 Start simultaneously. <br><br> These are mappable inputs. For ease of use, these features are enabled when toggling "Scroll Debug" in the core settings; there is no need to toggle the dipswitch. <br><br> The "Slow Scroll" button (P1/P2 Button 3) is not on hardware; P1 and P2 Start are merged to button 3. |
+| **Vimana**            | 8-Way    | [**Service Menu**](https://github.com/va7deo/vimana/assets/32810066/69896bb8-5b5f-4bc0-a855-28bdd58037e8) | [**Dip Sheet**](https://github.com/va7deo/vimana/assets/32810066/23d9f6e2-0ab6-4dc2-a273-8dbcbc3ad661) | Co-Op           | N/A         | Enabling the "No Death/Stop" dipswitch enables in-game pause by pressing P2 Start; pressing P2 Start returns to game. There is a fast and slow motion debug setting; "fast scroll" is on button 3 of the JAMMA edge. For "slow scroll", press P1 and P2 Start simultaneously. <br><br> For ease of use, these features are enabled when toggling "Scroll Debug" in the core settings; there is no need to toggle the dipswitch. The "Slow Scroll" button (P1/P2 Button 4) is not on hardware; P1 and P2 Start are merged to button 4. <br><br> There is a "kill player" button combination not documented; press and hold "Fast Scroll" and "Bomb", then press "Shot/Charging Shot" when the "No Death/Stop" dipswitch or "Scroll Debug" is toggled in "DIP Switches" or "Core Settings".                                                  |
 
 <br>
 
-- Push button 3 may have no function in game, but corresponds to the original hardware and service menu.<br><br>
+- Push button 3 may have no function in game, but corresponds to the original hardware and service menu. The "Scroll Debug" adds a button combination and is not tied to the keyboard handler.<br><br>
 
 ### Keyboard Handler
 
@@ -142,15 +150,15 @@ _(Vimana)_
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | <table> <tr><th>Functions</th><th>Keymap</th></tr><tr><td>Test</td><td>F2</td></tr><tr><td>Reset</td><td>F3</td></tr><tr><td>Service</td><td>9</td></tr><tr><td>Pause</td><td>P</td></tr> </table> | <table><tr><th>Functions</th><th>Keymap</th><tr><tr><td>P1 Start</td><td>1</td></tr><tr><td>P2 Start</td><td>2</td></tr><tr><td>P1 Coin</td><td>5</td></tr><tr><td>P2 Coin</td><td>6</td></tr> </table> |
 
-| Player 1                                                                                                                                                                                                                                                                                                                                      | Player 2                                                                                                                                                                                                                                                                                                              |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <table> <tr><th>Functions</th><th>Keymap</th></tr><tr><td>P1 Up</td><td>Up</td></tr><tr><td>P1 Down</td><td>Down</td></tr><tr><td>P1 Left</td><td>Left</td></tr><tr><td>P1 Right</td><td>Right</td></tr><tr><td>P1 Bttn 1</td><td>L-CTRL</td></tr><tr><td>P1 Bttn 2</td><td>L-ALT</td></tr><tr><td>P1 Bttn 3</td><td>Space</td></tr> </table> | <table> <tr><th>Functions</th><th>Keymap</th></tr><tr><td>P2 Up</td><td>R</td></tr><tr><td>P2 Down</td><td>F</td></tr><tr><td>P2 Left</td><td>D</td></tr><tr><td>P2 Right</td><td>G</td></tr><tr><td>P2 Bttn 1</td><td>A</td></tr><tr><td>P2 Bttn 2</td><td>S</td></tr><tr><td>P2 Bttn 3</td><td>Q</td></tr> </table> |
+| Player 1                                                                                                                                                                                                                                                                                                                                      | Player 2                                                                                                                                                                                                                                                                                                                                                   |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <table> <tr><th>Functions</th><th>Keymap</th></tr><tr><td>P1 Up</td><td>Up</td></tr><tr><td>P1 Down</td><td>Down</td></tr><tr><td>P1 Left</td><td>Left</td></tr><tr><td>P1 Right</td><td>Right</td></tr><tr><td>P1 Bttn 1</td><td>L-CTRL</td></tr><tr><td>P1 Bttn 2</td><td>L-ALT</td></tr><tr><td>P1 Bttn 3</td><td>Space</td></tr> </table> | <table> <tr><th>Functions</th><th>Keymap</th></tr><tr><td>P2 Up</td><td>R</td></tr><tr><td>P2 Down</td><td>F</td></tr><tr><td>P2 Left</td><td>D</td></tr><tr><td>P2 Right</td><td>G</td></tr><tr><td>P2 Bttn 1</td><td>A</td></tr><tr><td>P2 Bttn 2</td><td>S</td></tr><tr><td>P2 Bttn 3</td><td>Q</td></tr> </table>                                      |
 
 # Acknowledgments
 
 Thank you to the following below who loaned hardware used during development:<br>
 
-[**@90s_cyber_thriller**](https://www.instagram.com/90s_cyber_thriller/) for loaning Vimana (TP-019)<br>
+[**@90s_cyber_thriller**](https://www.instagram.com/90s_cyber_thriller/) for loaning two different variations of Vimana (TP-019)<br>
 
 # Support
 

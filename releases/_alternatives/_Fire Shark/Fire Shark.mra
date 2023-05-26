@@ -28,7 +28,7 @@
         <dip name="Region" bits="17,18" ids="USA-0,Europe,USA-1"/>
     </switches>
 
-    <buttons names="Shot,Bomb,-,P1 Start,P2 Start,Coin A,Coin B,Pause" default="A,B,X,Y,R,Start"/>
+    <buttons names="Shot,Bomb,-,Slow Scroll,P1 Start,P2 Start,Coin A,Coin B,Pause" default="A,B,X,Y,R,Start,L"/>
 
     <rom index="1">
         <part>01</part>
