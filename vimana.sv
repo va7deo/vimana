@@ -272,7 +272,7 @@ localparam CONF_STR = {
 wire hps_forced_scandoubler;
 wire forced_scandoubler = hps_forced_scandoubler | status[10];
 
-wire  [2:0] buttons;
+wire  [1:0] buttons;
 wire [63:0] status;
 wire [10:0] ps2_key;
 wire [15:0] joy0, joy1;
@@ -352,27 +352,21 @@ reg [7:0] z80_tjump;
 reg [7:0] system;
 
 always @ (posedge clk_sys ) begin
-    debug_buttons <= status[32];
+    p1        <= { 1'b0, p1_buttons[2:0], p1_right, p1_left, p1_down, p1_up };
+    p2        <= { 1'b0, p2_buttons[2:0], p2_right, p2_left, p2_down, p2_up };
+    z80_dswa  <= sw[0];
+    z80_tjump <= sw[2];
 
     if ( status[32] == 1 ) begin
-        p1        <= { 2'b0, p1_buttons[2:0], p1_right, p1_left, p1_down, p1_up };
-        p2        <= { 2'b0, p2_buttons[2:0], p2_buttons[2], p2_buttons[1], p2_buttons[0], p2_right, p2_left, p2_down, p2_up };
-        z80_dswa  <= sw[0];
         z80_dswb  <= { sw[1][7], sw[1][6] | status[32], sw[1][5:0] };
-        z80_tjump <= sw[2];
         system    <= { vbl, start2 | p1_buttons[3], start1 | p1_buttons[3], coin_b, coin_a, service, key_tilt, key_service };
     end else begin
-        p1        <= { 1'b0, p1_buttons[2:0], p1_right, p1_left, p1_down, p1_up };
-        p2        <= { 1'b0, p2_buttons[2:0], p2_right, p2_left, p2_down, p2_up };
-        z80_dswa  <= sw[0];
         z80_dswb  <= sw[1];
-        z80_tjump <= sw[2];
-        system    <= { vbl, start2, start1, coin_b, coin_a, service, key_tilt, key_service };
+        system    <= { vbl, start2,                 start1,                 coin_b, coin_a, service, key_tilt, key_service };
     end
 end
 
 reg        p1_swap;
-reg        debug_buttons;
 
 reg        p1_right;
 reg        p1_left;
@@ -986,8 +980,6 @@ jtopl #(.OPL_TYPE(2)) jtopl2
     .sample(opl_sample_clk)
 );
 
-wire       audio_en   = status[11];       // audio enable
-
 wire [1:0] opl2_level = status[44:43];    // opl2 audio mix
 
 reg  [7:0] opl2_mult;
@@ -998,12 +990,12 @@ always @( posedge clk_sys, posedge reset ) begin
     if (reset) begin
         opl2_mult<=0;
     end else begin
-    case( opl2_level )
-        0: opl2_mult <= 8'h0c;    // 75%
-        1: opl2_mult <= 8'h08;    // 50%
-        2: opl2_mult <= 8'h04;    // 25%
-        3: opl2_mult <= 8'h00;    // 0%
-    endcase
+        case( opl2_level )
+            0: opl2_mult <= 8'h0c;    // 75%
+            1: opl2_mult <= 8'h08;    // 50%
+            2: opl2_mult <= 8'h04;    // 25%
+            3: opl2_mult <= 8'h00;    // 0%
+        endcase
     end
 end
 
@@ -1027,14 +1019,14 @@ jtframe_mixer #(.W0(16), .WOUT(16)) u_mix_mono(
     .peak   (              )
 );
 
-always @ * begin
-    if ( audio_en == 0 ) begin
+always @ (posedge clk_sys ) begin
+    if ( pause_cpu == 1 ) begin
+        AUDIO_L <= 0;
+        AUDIO_R <= 0;
+    end else if ( pause_cpu == 0 ) begin
         // mix audio
         AUDIO_L <= mono;
         AUDIO_R <= mono;
-    end else begin
-        AUDIO_L <= 0;
-        AUDIO_R <= 0;
     end
 end
 

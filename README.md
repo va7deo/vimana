@@ -3,9 +3,9 @@
 
 FPGA compatible core of Toaplan Version 1 arcade hardware for [**MiSTerFPGA**](https://github.com/MiSTer-devel/Main_MiSTer/wiki) written by [**Darren Olafson**](https://twitter.com/Darren__O). Based on OutZone (TP-018) schematics and verified against Vimana (TP-019).
 
-The intent is for this core to be a 1:1 implementation of Toaplan V1 hardware. Currently in beta state, this core is in active development with assistance from [**atrac17**](https://github.com/atrac17).
+The intent is for this core to be a 1:1 **game play** FPGA implementation of Toaplan V1 hardware for the supported titles. Currently in beta state, this project is in active development with assistance from [**atrac17**](https://github.com/atrac17).
 
-Rally Bike (TP-012), Horror Story / Demon's World (TP-016), Tatsujin (TP-013B), Hellfire (TP-014), Zero Wing (TP-015) and OutZone (TP-018) are also Toaplan V1 hardware and have separate repositories located [**here**](https://github.com/va7deo?tab=repositories).
+Rally Bike (TP-012), Tatsujin (TP-013B), Hellfire (TP-014), Zero Wing (TP-015), Demon's World (TP-016), and OutZone (TP-018) are also Toaplan V1 titles and have separate repositories located [**here**](https://github.com/va7deo?tab=repositories).
 
 ![vimana](https://github.com/va7deo/vimana/assets/32810066/0a9385b5-8224-4321-a63a-8cd3c8dec72a)
 
@@ -30,11 +30,18 @@ Rally Bike (TP-012), Horror Story / Demon's World (TP-016), Tatsujin (TP-013B), 
 # Known Issues / Tasks
 
 - [**OPL2 Audio**](https://github.com/jotego/jtopl/issues/11)  **[Issue]**  
-- Verify irq timings on TP-017 against video timings from PCB capture (no PCB on-hand)  **[Issue]**  
-- Timing issues with jtframe_mixer module; false paths added to sdc (may need refactor?)  **[Task]**  
+- Verify irq timings on TP-017 against video timings from PCB capture  **[Issue]**  
+- Address timing issues with jtframe_mixer module usage; false paths added to sdc  **[Task]**  
 - Attempt usage of y80e core for HD647180X CPU if functional with Ghox  **[Task]**  
 
 # PCB Check List
+
+### Schematics Availability
+
+| Title              | Schematics / Additional Verification | Notes                                                                                                                                                                                                                                                                                                        |
+|--------------------|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Same! Same! Same!  | Not Available                        | Same! Same! Same! is similar to Vimana pcb layout with same timing parameters. PCB measurements needed.                                                                                                                                                                                                      |
+| Vimana             | Not Available                        | [**OutZone schematics**](https://github.com/va7deo/zerowing/blob/main/doc/Schematics/Out%20Zone%20Schematics.pdf) referenced for design and implemented in core [**(Darren Olafson)**](https://github.com/va7deo). Vimana pcb timings and gameplay verification [**(atrac17)**](https://github.com/atrac17). |
 
 ### Clock Information
 
@@ -53,7 +60,7 @@ Rally Bike (TP-012), Horror Story / Demon's World (TP-016), Tatsujin (TP-013B), 
 
 **Estimated geometry:**
 
-_(Vimana)_
+_(Same! Same! Same!, Vimana)_
 
     450 pixels/line  
   
@@ -74,7 +81,7 @@ _(Vimana)_
 | **NEC D65081R077**                               | Custom Gate-Array  |
 | **FCU-02**                                       | Sprite RAM         |
 | **FDA MN53007T0A / TOAPLAN-02 M70H005 / GXL-02** | Sprite Counter     |
-| **BCU-02**                                       | Tile Map Generator | <br>
+| **BCU-02**                                       | Tile Map Generator |
 
 ### Additional Components
 
@@ -82,46 +89,55 @@ _(Vimana)_
 |-----------------------------------------------------------|--------------------------|----------------------|-----------------|--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [**HD647180X**](https://en.wikipedia.org/wiki/Zilog_Z180) | Sound CPU & I/O Handling | **TP-017<br>TP-019** | Not Implemented | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80) | It was discovered that the audio ROM is Z80 compatible code and the HD647180X is backwards compatible with the Z80 but has an additional 512 bytes of internal RAM. <br><br> None of the specific instructions or I/O ports of the HD647180X are utilized. |
 
-# Core Features
+### Screen Flip / Cocktail Support
 
-### Refresh Rate Compatibility Option
+| Title                 | Screen Flip | Cocktail Support                                                     | Implemented |
+|-----------------------|-------------|----------------------------------------------------------------------|-------------|
+| **Same! Same! Same!** | Dipswitch   | Same! Same! Same! (1P Set) <br> Same! Same! Same! (1P Set, New Ver.) | Yes         |
+| **Vimana**            | Dipswitch   | No                                                                   | Yes         | <br>
 
-- Video timings can be modified if you experience sync issues with CRT or modern displays; this will alter gameplay from it's original state.
-
-| Refresh Rate      | Timing Parameter     | HTOTAL | VTOTAL |
-|-------------------|----------------------|--------|--------|
-| 15.56kHz / 57.6Hz | TP-019               | 450    | 270    |
-| 15.73kHz / 59.8Hz | NTSC                 | 445    | 264    |
-
-### P1/P2 Input Swap Option
-
-- There is a toggle to swap inputs from Player 1 to Player 2. This only swaps inputs for the joystick, it does not effect keyboard inputs.
-
-### Audio Options
-
-- There is a toggle to adjust the gain and disable playback of OPL2 audio.
-
-### Overclock Options
-
-- There is a toggle to increase the M68000 frequency from 10MHz to 17.5MHz; this will alter gameplay from it's original state.
-
-### Native Y/C Output
-
-- Native Y/C ouput is possible with the [**analog I/O rev 6.1 pcb**](https://github.com/MiSTer-devel/Main_MiSTer/wiki/IO-Board). Using the following cables, [**HD-15 to BNC cable**](https://www.amazon.com/StarTech-com-Coax-RGBHV-Monitor-Cable/dp/B0033AF5Y0/) will transmit Y/C over the green and red lines. Choose an appropriate adapter to feed [**Y/C (S-Video)**](https://www.amazon.com/MEIRIYFA-Splitter-Extension-Monitors-Transmission/dp/B09N19XZJQ) to your display.
-
-### H/V Adjustments
-
-- There are two H/V toggles, H/V-sync positioning adjust and H/V-sync width adjust. Positioning will move the display for centering on CRT display. The sync width adjust can be used to for sync issues (rolling) without modifying the video timings.
-
-### Scandoubler Options
-
-- Additional toggle to enable the scandoubler without changing ini settings and new scanline option for 100% is available, this draws a black line every other frame. Below is an example.
-
-<table><tr><th>Scandoubler Fx</th><th>Scanlines 25%</th><th>Scanlines 50%</th><th>Scanlines 75%</th><th>Scanlines 100%</th><tr><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/d8f85a3f-fd9d-4f1b-8f33-17e4990744bb"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/8a769580-3718-4903-9fb5-33ec4a940f1d"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/cf27bdfc-3f3b-4992-861f-34cdd4a863f1"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/ce28890e-ad2b-4986-9425-f1cab656fc4d"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/a72e966a-2185-4230-aa01-65425785d235"></td></tr></table> <br>
+# Core Options / Additional Features
 
 ### Scroll Debug Option
 
-- There is a toggle to enable the third button for "Fast Scroll" in Vimana and a fourth button for the "Slow Scroll" feature in in Vimana and Same! Same! Same! See the "PCB Information" section for further information.
+- Additional toggle to enable the third button for "Fast Scroll" in Vimana and a fourth button for the "Slow Scroll" feature in Vimana and Same! Same! Same! See the "PCB Information" section for further information.
+
+### Refresh Rate Compatibility Option
+
+- Additional toggle to modify video timings; only use for sync issues with an analog display or scroll jitter on a modern display. This is due to the hardware's low refresh rate, enabling the toggle alters gameplay from it's original state.
+
+| Refresh Rate      | Timing Parameter     | HTOTAL | VTOTAL |
+|-------------------|----------------------|--------|--------|
+| 15.56kHz / 57.6Hz | TP-017 / TP-019      | 450    | 270    |
+| 15.73kHz / 59.8Hz | NTSC                 | 445    | 264    |
+
+### P1/P2 Input Swap Options
+
+- Additional toggle to swap inputs from Player 1 to Player 2. This swaps inputs for the joystick and keyboard assignments.
+
+### Audio Options
+
+- Additional toggle to adjust the volume gain or disable playback of OPL2 audio.
+
+### Overclock Options
+
+- Additional toggle to increase the M68000 frequency from 10MHz to 17.5MHz; this will alter gameplay from it's original state and address any undesired native slow down.
+
+### Native Y/C Output ( 15kHz Displays )
+
+- Native Y/C ouput is possible with the [**analog I/O rev 6.1 pcb**](https://github.com/MiSTer-devel/Main_MiSTer/wiki/IO-Board). Using the following cables, [**HD-15 to BNC cable**](https://www.amazon.com/StarTech-com-Coax-RGBHV-Monitor-Cable/dp/B0033AF5Y0/) will transmit Y/C over the green and red lines. Choose an appropriate adapter to feed [**Y/C (S-Video)**](https://www.amazon.com/MEIRIYFA-Splitter-Extension-Monitors-Transmission/dp/B09N19XZJQ) to your display.
+
+### H/V Adjustments ( 15kHz Displays )
+
+- Additional toggle for horizontal and vertical centering; the "H/V-Sync Pos Adj" toggles move the image to assist in screen centering if you choose not to adjust your displays settings.
+
+- Additional toggle for horizontal and vertical sync width adjust; the "H/V-Sync Width Adj" toggles address "rolling sync" and "flagging" on certain displays.
+
+### Scandoubler Options ( 31kHz Displays )
+
+- Additional toggle to enable the scandoubler (31kHz) without changing ini settings and a new scanline option for 100% is available; the new scanline setting draws a black line every other frame. Scandoubler options pass over HDMI as well.
+
+<table><tr><th>Scandoubler Fx</th><th>Scanlines 25%</th><th>Scanlines 50%</th><th>Scanlines 75%</th><th>Scanlines 100%</th><tr><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/d8f85a3f-fd9d-4f1b-8f33-17e4990744bb"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/8a769580-3718-4903-9fb5-33ec4a940f1d"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/cf27bdfc-3f3b-4992-861f-34cdd4a863f1"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/ce28890e-ad2b-4986-9425-f1cab656fc4d"></td><td><br> <p align="center"><img width="120" height="160" src="https://github.com/va7deo/vimana/assets/32810066/a72e966a-2185-4230-aa01-65425785d235"></td></tr></table> <br>
 
 # PCB Information / Control Layout
 
@@ -132,7 +148,7 @@ _(Vimana)_
 
 <br>
 
-- Push button 3 may have no function in game, but corresponds to the original hardware and service menu. The "Scroll Debug" adds a button combination and is not tied to the keyboard handler.<br><br>
+- Push button 3 may have no function in-game, but corresponds to the hardware service menu in Vimana and is a debug button for "fast scroll". The "Scroll Debug" adds a button combination and is not tied to the keyboard handler. <br><br>
 
 ### Keyboard Handler
 
@@ -152,7 +168,7 @@ _(Vimana)_
 
 # Acknowledgments
 
-Thank you to the following below who loaned hardware used during development:<br>
+Special thanks to the following loaned hardware used during development of this project: <br>
 
 [**@90s_cyber_thriller**](https://www.instagram.com/90s_cyber_thriller/) for loaning two different variations of Vimana (TP-019)<br>
 
