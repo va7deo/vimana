@@ -36,13 +36,6 @@ Rally Bike (TP-012), Tatsujin (TP-013B), Hellfire (TP-014), Zero Wing (TP-015), 
 
 # PCB Check List
 
-### Schematics Availability
-
-| Title              | Schematics / Additional Verification | Notes                                                                                                                                                                                                                                                                                                        |
-|--------------------|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Same! Same! Same!  | Not Available                        | Same! Same! Same! is similar to Vimana pcb layout with same timing parameters. PCB measurements needed.                                                                                                                                                                                                      |
-| Vimana             | Not Available                        | [**OutZone schematics**](https://github.com/va7deo/zerowing/blob/main/doc/Schematics/Out%20Zone%20Schematics.pdf) referenced for design and implemented in core [**(Darren Olafson)**](https://github.com/va7deo). Vimana pcb timings and gameplay verification [**(atrac17)**](https://github.com/atrac17). |
-
 ### Clock Information
 
 | H-Sync       | V-Sync      | Source    | PCB<br>Number |
